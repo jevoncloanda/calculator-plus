@@ -97,6 +97,14 @@ function applyOperator(expression: string, operator: string): string {
   }
   const last = lastChar(expression);
 
+  // A minus immediately after ×, ÷ or ^ is a unary sign. If another binary
+  // operator is pressed, replace that whole unfinished operator state instead
+  // of leaving a sequence such as `××` or `×+` behind.
+  const previous = expression.at(-2);
+  if (last === '−' && previous && OPERATORS.has(previous) && previous !== '+' && previous !== '−') {
+    return expression.slice(0, -2) + operator;
+  }
+
   if (OPERATORS.has(last)) {
     // `×` followed by `−` is a signed operand, not a typo.
     if (operator === '−' && last !== '+' && last !== '−') return expression + operator;

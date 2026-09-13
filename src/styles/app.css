@@ -120,10 +120,17 @@
   font-weight: 300;
   line-height: 1.15;
   letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
+  /* Expressions may wrap at operators, but numeric operands must remain whole.
+     `anywhere` allowed a value such as 786132456 to split across lines. */
+  overflow-wrap: normal;
+  word-break: normal;
   white-space: normal;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+}
+
+.display__number {
+  white-space: nowrap;
 }
 
 .display__expression::-webkit-scrollbar {

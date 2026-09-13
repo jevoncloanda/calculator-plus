@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { CommittedResult } from '../calculator/session';
 
 interface CalculatorDisplayProps {
@@ -19,6 +19,22 @@ function expressionScale(length: number): string {
   if (length > 28) return '0.76';
   if (length > 16) return '0.88';
   return '1';
+}
+
+/** Keep each typed number together while allowing an expression to wrap after operators. */
+function renderExpression(expression: string) {
+  return expression.split(/(\d[\d.,]*)/u).flatMap((part, partIndex) => {
+    if (/^\d/u.test(part)) {
+      return <span className="display__number" key={`number-${partIndex}`}>{part}</span>;
+    }
+
+    return Array.from(part).map((character, characterIndex) => (
+      <Fragment key={`symbol-${partIndex}-${characterIndex}`}>
+        {character}
+        {/[+\-×÷^]/u.test(character) && <wbr />}
+      </Fragment>
+    ));
+  });
 }
 
 export function CalculatorDisplay({
@@ -63,7 +79,7 @@ export function CalculatorDisplay({
         style={{ '--expression-scale': expressionScale(expression.length) } as CSSProperties}
         aria-label={hasExpression ? `Expression ${expression}` : 'No expression'}
       >
-        {hasExpression ? expression : '0'}
+        {hasExpression ? renderExpression(expression) : '0'}
       </div>
 
       <div className="display__secondary" role="status" aria-live="polite">

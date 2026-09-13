@@ -262,6 +262,12 @@ describe('expression input', () => {
     expect(applyKey('5+', 'subtract')).toBe('5−');
   });
 
+  it('replaces an unfinished signed operator instead of stacking operators', () => {
+    expect(type(['5', 'multiply', 'subtract', 'multiply'])).toBe('5×');
+    expect(type(['5', 'divide', 'subtract', 'add'])).toBe('5+');
+    expect(type(['2', 'power', 'subtract', 'divide'])).toBe('2÷');
+  });
+
   it('guards the decimal point', () => {
     expect(type(['1', 'decimal', 'decimal', '5'])).toBe('1.5');
     expect(type(['decimal', '5'])).toBe('0.5');
